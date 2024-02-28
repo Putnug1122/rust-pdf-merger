@@ -5,16 +5,26 @@ use std::collections::BTreeMap;
 use lopdf::content::{Content, Operation};
 use lopdf::{Document, Object, ObjectId, Stream, Bookmark};
 
+use glob::glob;
+use natord::compare;
+
 fn main() -> std::io::Result<()> {
     // Generate a stack of Documents to merge
-    let documents = vec![
-        Document::load("pdf-files/IMK-1.pdf").unwrap(),
-        Document::load("pdf-files/IMK-2.pdf").unwrap(),
-        Document::load("pdf-files/IMK-3.pdf").unwrap(),
-        Document::load("pdf-files/IMK-4.pdf").unwrap(),
-        Document::load("pdf-files/IMK-5.pdf").unwrap(),
-        Document::load("pdf-files/IMK-6.pdf").unwrap(),
-    ];
+    let mut documents = Vec::new();
+
+    let mut paths = glob("pdf-files/*.pdf")
+    .expect("Failed to read glob pattern")
+    .filter_map(Result::ok)
+    .collect::<Vec<_>>();
+
+    // Sort paths naturally
+    paths.sort_by(|a, b| compare(&a.to_string_lossy(), &b.to_string_lossy()));
+
+    for path in paths {
+        let doc = Document::load(&path).unwrap();
+        documents.push(doc);
+    }
+
 
     // Define a starting max_id (will be used as start index for object_ids)
     let mut max_id = 1;

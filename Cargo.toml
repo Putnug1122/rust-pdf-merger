@@ -5,4 +5,6 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-lopdf = "0.29.0"
+lopdf = "0.32.0"
+natord = "1.0.9"
+glob = "0.3.1"
